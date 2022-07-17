@@ -11,7 +11,6 @@ namespace IdentityServerHost
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
                 new IdentityResource("DemoRole", "DemoRoleDisplayName", new[] { "swagger_role" })
-
             };
     }
 }

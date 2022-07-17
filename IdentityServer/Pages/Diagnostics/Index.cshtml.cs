@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace IdentityServerHost.Pages.Diagnostics;
 
@@ -12,7 +12,7 @@ namespace IdentityServerHost.Pages.Diagnostics;
 public class Index : PageModel
 {
     public ViewModel View { get; set; }
-        
+
     public async Task<IActionResult> OnGet()
     {
         var localAddresses = new string[] { "127.0.0.1", "::1", HttpContext.Connection.LocalIpAddress.ToString() };
@@ -22,7 +22,7 @@ public class Index : PageModel
         }
 
         View = new ViewModel(await HttpContext.AuthenticateAsync());
-            
+
         return Page();
     }
 }

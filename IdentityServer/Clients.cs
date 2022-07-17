@@ -1,13 +1,13 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 using System.Collections.Generic;
-using Duende.IdentityServer;
 
 namespace IdentityServerHost
 {
     public static class Clients
     {
         public static IEnumerable<Client> List =>
-            new []
+            new[]
             {
                 new Client
                 {

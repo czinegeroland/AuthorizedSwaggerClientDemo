@@ -17,7 +17,7 @@ namespace SwaggerClient.Infrastructure
         {
             if (!context.User.Identity.IsAuthenticated)
             {
-                context.Response.Redirect($"{Configuration["OpenIdConnect:Authority"]}/Account/Login");
+                context.Response.Redirect($"https://localhost:44300/Account/Login");
                 await context.ChallengeAsync();
             }
             else

@@ -1,7 +1,7 @@
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Linq;
+using System.Reflection;
 
 namespace IdentityServerHost.Pages.Home;
 
@@ -9,7 +9,7 @@ namespace IdentityServerHost.Pages.Home;
 public class Index : PageModel
 {
     public string Version;
-        
+
     public void OnGet()
     {
         Version = typeof(Duende.IdentityServer.Hosting.IdentityServerMiddleware).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+').First();

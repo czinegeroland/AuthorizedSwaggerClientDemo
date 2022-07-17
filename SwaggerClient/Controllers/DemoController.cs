@@ -8,10 +8,10 @@ namespace SwaggerClient.Controllers
     [ApiController]
     public class DemoController : ControllerBase
     {
-        [HttpGet("number")]
-        public async Task<IActionResult> Get()
+        [HttpGet("test")]
+        public async Task<IActionResult> Test()
         {
-            return Ok(1);
+            return Ok();
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-
-namespace SwaggerClient.Infrastructure
+﻿namespace SwaggerClient.Infrastructure
 {
     public class AuthorizedAccessDeniedMiddleware
     {
