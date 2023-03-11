@@ -42,10 +42,6 @@ builder.Services.AddAuthentication(option =>
             var token = authorization.Substring("Bearer ".Length).Trim();
             var jwtHandler = new JwtSecurityTokenHandler();
 
-
-            var canRead = jwtHandler.CanReadToken(token);
-            var readToken = jwtHandler.ReadJwtToken(token);
-
             if (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Issuer.Equals("https://localhost:44300"))
                 return JwtBearerDefaults.AuthenticationScheme;
         }
