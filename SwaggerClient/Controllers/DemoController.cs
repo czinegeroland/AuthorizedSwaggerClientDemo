@@ -1,17 +1,18 @@
 ﻿using Flurl.Http;
 using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.WebRequestMethods;
 
 namespace SwaggerClient.Controllers
 {
-    [Authorize()]
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class DemoController : ControllerBase
     {
-        [HttpGet("test")]
+        [HttpGet("token")]
         public async Task<IActionResult> Test()
         {
             var client = new HttpClient();
@@ -23,17 +24,17 @@ namespace SwaggerClient.Controllers
                 Scope = "hangfireapi"
 
             }).ConfigureAwait(false);
-            tokenResponse.HttpResponse.EnsureSuccessStatusCode();
+             tokenResponse.HttpResponse.EnsureSuccessStatusCode();
 
-            using (var fluentClient = new FlurlClient("https://localhost:44393/Demo/test/hangfire-api-test"))
-            {
-                var response = await fluentClient
-                    .Request()
-                    .WithOAuthBearerToken(tokenResponse.AccessToken)
-                    .GetAsync();
-            }
+            //using (var fluentClient = new FlurlClient("https://localhost:44383/test/test"))
+            //{
+            //    var response = await fluentClient
+            //        .Request()
+            //        .WithOAuthBearerToken(tokenResponse.AccessToken)
+            //        .GetAsync();
+            //}
 
-            return Ok();
+            return Ok(tokenResponse.AccessToken);
         }
 
         [HttpGet("hangfire-api-test")]

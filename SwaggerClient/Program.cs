@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using SwaggerClient.Infrastructure;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,9 +28,29 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthentication(option =>
 {
-    option.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    option.DefaultAuthenticateScheme = "MultiAuthSchemes";
     option.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     option.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+.AddPolicyScheme("MultiAuthSchemes", JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        string authorization = context.Request.Headers[HeaderNames.Authorization];
+        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+        {
+            var token = authorization.Substring("Bearer ".Length).Trim();
+            var jwtHandler = new JwtSecurityTokenHandler();
+
+
+            var canRead = jwtHandler.CanReadToken(token);
+            var readToken = jwtHandler.ReadJwtToken(token);
+
+            if (jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Issuer.Equals("https://localhost:44300"))
+                return JwtBearerDefaults.AuthenticationScheme;
+        }
+        return CookieAuthenticationDefaults.AuthenticationScheme;
+    };
 })
 .AddCookie()
 .AddOpenIdConnect(options =>
@@ -45,29 +68,41 @@ builder.Services.AddAuthentication(option =>
         RoleClaimType = "swagger_role"
     };
 })
-.AddJwtBearer(cfg =>
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg =>
 {
-    cfg.RequireHttpsMetadata = false;
-    cfg.SaveToken = true;
-    cfg.TokenValidationParameters = GetTokenValidationParameters();
-    cfg.IncludeErrorDetails = true;
-}); ;
+    cfg.Authority = "https://localhost:44300";
+    cfg.Audience = "hangfire";
+    cfg.TokenValidationParameters.ValidateAudience = false;
+});
 
-TokenValidationParameters GetTokenValidationParameters() => new()
-{
-    // standard configuration
-    ValidIssuer = "https://localhost:44300",
-    IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("secret")),
-    ValidAudience = "hangfire",
-    //ClockSkew = TimeSpan.Zero,
+//builder.Services.AddAuthorization(options =>
+//{
+//    var onlyJwtSchemePolicyBuilder = new AuthorizationPolicyBuilder("JwtBearerDefaults.AuthenticationScheme");
+//    options.AddPolicy("OnlyJwtScheme", onlyJwtSchemePolicyBuilder
+//        .RequireAuthenticatedUser()
+//        .Build());
 
-    // security switches
-    //RequireExpirationTime = true,
-    ValidateIssuer = true,
-    ValidateIssuerSigningKey = true,
-    ValidateAudience = true,
-};
+//    var onlyCookieSchemePolicyBuilder = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
+//    options.AddPolicy("OnlyCookieScheme", onlyCookieSchemePolicyBuilder
+//        .RequireAuthenticatedUser()
+//        .Build());
+//});
+
+//TokenValidationParameters GetTokenValidationParameters() => new()
+//{
+//    // standard configuration
+//    ValidIssuer = "https://localhost:44300",
+//    IssuerSigningKey = new SymmetricSecurityKey(
+//            Encoding.UTF8.GetBytes("secret")),
+//    ValidAudience = "hangfire",
+//    //ClockSkew = TimeSpan.Zero,
+
+//    // security switches
+//    //RequireExpirationTime = true,
+//    ValidateIssuer = true,
+//    ValidateIssuerSigningKey = true,
+//    ValidateAudience = true,
+//};
 //builder.Services.AddAuthentication(opts =>
 //{
 //    opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

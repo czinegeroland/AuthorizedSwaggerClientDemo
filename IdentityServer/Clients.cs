@@ -36,6 +36,7 @@ namespace IdentityServerHost
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     RequireClientSecret = true,
+                    RefreshTokenExpiration = TokenExpiration.Sliding,
                     AllowedScopes =
                     {
                         "hangfireapi"
