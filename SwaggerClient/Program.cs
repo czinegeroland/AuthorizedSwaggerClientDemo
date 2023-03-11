@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SwaggerClient.Infrastructure;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +44,39 @@ builder.Services.AddAuthentication(option =>
     {
         RoleClaimType = "swagger_role"
     };
-});
+})
+.AddJwtBearer(cfg =>
+{
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = GetTokenValidationParameters();
+    cfg.IncludeErrorDetails = true;
+}); ;
+
+TokenValidationParameters GetTokenValidationParameters() => new()
+{
+    // standard configuration
+    ValidIssuer = "https://localhost:44300",
+    IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("secret")),
+    ValidAudience = "hangfire",
+    //ClockSkew = TimeSpan.Zero,
+
+    // security switches
+    //RequireExpirationTime = true,
+    ValidateIssuer = true,
+    ValidateIssuerSigningKey = true,
+    ValidateAudience = true,
+};
+//builder.Services.AddAuthentication(opts =>
+//{
+//    opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+//    opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//    // Add Jwt token support
+
+
 
 var app = builder.Build();
 

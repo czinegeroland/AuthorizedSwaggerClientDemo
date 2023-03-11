@@ -30,6 +30,17 @@ namespace IdentityServerHost
                         "DemoRole"
                     },
                 },
+                new Client
+                {
+                    ClientId = "hangfire",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+                    RequireClientSecret = true,
+                    AllowedScopes =
+                    {
+                        "hangfireapi"
+                    },
+                },
             };
     }
 }

@@ -12,5 +12,11 @@ namespace IdentityServerHost
                 new IdentityResources.Profile(),
                 new IdentityResource("DemoRole", "DemoRoleDisplayName", new[] { "swagger_role" })
             };
+
+        public static IEnumerable<ApiScope> Apis =>
+            new List<ApiScope>
+            {
+                new ApiScope("hangfireapi", "My Api")
+            };
     }
 }

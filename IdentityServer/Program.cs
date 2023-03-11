@@ -14,6 +14,7 @@ var identityBuilder = builder.Services.AddIdentityServer(options =>
 });
 
 identityBuilder.AddInMemoryIdentityResources(Resources.Identity);
+identityBuilder.AddInMemoryApiScopes(Resources.Apis);
 identityBuilder.AddInMemoryClients(Clients.List);
 identityBuilder.AddTestUsers(TestUsers.Users);
 
